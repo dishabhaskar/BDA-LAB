@@ -1,0 +1,148 @@
+> db;
+test
+> use mydb;
+switched to db mydb
+> show dbs;
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> db.createcollection("student");
+uncaught exception: TypeError: db.createcollection is not a function :
+@(shell):1:1
+> db.createcCollection("student");
+uncaught exception: TypeError: db.createcCollection is not a function :
+@(shell):1:1
+> db.createCollection("student");
+{ "ok" : 1 }
+> db.student.drop();
+true
+> show dbs;
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> db.createCollection("student");
+{ "ok" : 1 }
+> db.student.insert({id:1,studname:"michael",grade="a",hobbies:"surfing"});
+uncaught exception: SyntaxError: missing : after property id :
+@(shell):1:48
+> db.student.insert({id:1,studname:"michael",grade:"a",hobbies:"surfing"});
+WriteResult({ "nInserted" : 1 })
+> show dbs;
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+mydb    0.000GB
+> db;
+mydb
+> use english;
+switched to db english
+> show dbs;
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+mydb    0.000GB
+> db.english.insert({id:1,studname:"michael",grade:"a",hobbies:"surfing"});
+WriteResult({ "nInserted" : 1 })
+> show dbs;
+admin    0.000GB
+config   0.000GB
+english  0.000GB
+local    0.000GB
+mydb     0.000GB
+> use mydb;
+switched to db mydb
+> use english;
+switched to db english
+> db;
+english
+> use mydb;
+switched to db mydb
+> db;
+mydb
+> db.student.update({id:3,studname:"david",grade:"c"},{$set:{hobbies:"skating"}},{upsert:true});
+WriteResult({
+        "nMatched" : 0,
+        "nUpserted" : 1,
+        "nModified" : 0,
+        "_id" : ObjectId("629bd10a8864e82334f9f32c")
+})
+> db.student.find();
+{ "_id" : ObjectId("629bcf7dbf398af73b0a7d24"), "id" : 1, "studname" : "michael", "grade" : "a", "hobbies" : "surfing" }
+{ "_id" : ObjectId("629bd10a8864e82334f9f32c"), "grade" : "c", "id" : 3, "studname" : "david", "hobbies" : "skating" }
+> db.student.update({_id:4,studname:"david",grade:"c"},{$set:{hobbies:"skating"}},{upsert:true});
+WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : 4 })
+> db.student.find();
+{ "_id" : ObjectId("629bcf7dbf398af73b0a7d24"), "id" : 1, "studname" : "michael", "grade" : "a", "hobbies" : "surfing" }
+{ "_id" : ObjectId("629bd10a8864e82334f9f32c"), "grade" : "c", "id" : 3, "studname" : "david", "hobbies" : "skating" }
+{ "_id" : 4, "grade" : "c", "studname" : "david", "hobbies" : "skating" }
+> db.studntn.find({studname:"david"});
+> db.student.find({studname:"david"});
+{ "_id" : ObjectId("629bd10a8864e82334f9f32c"), "grade" : "c", "id" : 3, "studname" : "david", "hobbies" : "skating" }
+{ "_id" : 4, "grade" : "c", "studname" : "david", "hobbies" : "skating" }
+> db.student,find({},{studname:1,grade=1,id=0});
+uncaught exception: SyntaxError: missing : after property id :
+@(shell):1:36
+> db.student.find({},{studname:1,grade=1,id=0});
+uncaught exception: SyntaxError: missing : after property id :
+@(shell):1:36
+> db.student.find({},{studname:1,grade=1,_id=0});
+uncaught exception: SyntaxError: missing : after property id :
+@(shell):1:36
+> db.student.find({},{studname:1,grade:1,id:0});
+Error: error: {
+        "ok" : 0,
+        "errmsg" : "Cannot do exclusion on field id in inclusion projection",
+        "code" : 31254,
+        "codeName" : "Location31254"
+}
+> db.student.find({},{studname:1,grade:1,_id:0});
+{ "studname" : "michael", "grade" : "a" }
+{ "grade" : "c", "studname" : "david" }
+{ "grade" : "c", "studname" : "david" }
+> db.student.find({},{studname:1,grade:1,_id:0}).pretty();
+{ "studname" : "michael", "grade" : "a" }
+{ "grade" : "c", "studname" : "david" }
+{ "grade" : "c", "studname" : "david" }
+> db.student.find({grade:{$eq:'c'}}).pretty();
+{
+        "_id" : ObjectId("629bd10a8864e82334f9f32c"),
+        "grade" : "c",
+        "id" : 3,
+        "studname" : "david",
+        "hobbies" : "skating"
+}
+{ "_id" : 4, "grade" : "c", "studname" : "david", "hobbies" : "skating" }
+> db.student.find({grade:{$eq:'c'}});
+{ "_id" : ObjectId("629bd10a8864e82334f9f32c"), "grade" : "c", "id" : 3, "studname" : "david", "hobbies" : "skating" }
+{ "_id" : 4, "grade" : "c", "studname" : "david", "hobbies" : "skating" }
+> db.student.count();
+3
+> db.student.find().sort({studname:-1});
+{ "_id" : ObjectId("629bcf7dbf398af73b0a7d24"), "id" : 1, "studname" : "michael", "grade" : "a", "hobbies" : "surfing" }
+{ "_id" : ObjectId("629bd10a8864e82334f9f32c"), "grade" : "c", "id" : 3, "studname" : "david", "hobbies" : "skating" }
+{ "_id" : 4, "grade" : "c", "studname" : "david", "hobbies" : "skating" }
+> db.student.find().sort({studname:1});
+{ "_id" : ObjectId("629bd10a8864e82334f9f32c"), "grade" : "c", "id" : 3, "studname" : "david", "hobbies" : "skating" }
+{ "_id" : 4, "grade" : "c", "studname" : "david", "hobbies" : "skating" }
+{ "_id" : ObjectId("629bcf7dbf398af73b0a7d24"), "id" : 1, "studname" : "michael", "grade" : "a", "hobbies" : "surfing" }
+> db.student.find().sort({studname:/e/});
+Error: error: {
+        "ok" : 0,
+        "errmsg" : "Illegal key in $sort specification: studname: /e/",
+        "code" : 15974,
+        "codeName" : "Location15974"
+}
+> db.student.find().({studname:/e/});
+uncaught exception: SyntaxError: missing name after . operator :
+@(shell):1:18
+> db.student.find({studname:/e/});
+{ "_id" : ObjectId("629bcf7dbf398af73b0a7d24"), "id" : 1, "studname" : "michael", "grade" : "a", "hobbies" : "surfing" }
+> db.student.find({studname:/^m/});
+{ "_id" : ObjectId("629bcf7dbf398af73b0a7d24"), "id" : 1, "studname" : "michael", "grade" : "a", "hobbies" : "surfing" }
+> db.student.find({hobbies:{$in ['skating']}});
+uncaught exception: SyntaxError: missing : after property id :
+@(shell):1:30
+> db.student.find({hobbies:{$in: ['skating']}});
+{ "_id" : ObjectId("629bd10a8864e82334f9f32c"), "grade" : "c", "id" : 3, "studname" : "david", "hobbies" : "skating" }
+{ "_id" : 4, "grade" : "c", "studname" : "david", "hobbies" : "skating" }
+>
